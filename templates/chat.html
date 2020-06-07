@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <title>Chat</title>
+        <style>
+            input { display:block; }
+            ul { list-style: none; }
+        </style>
+    </head>
+    <body>
+        <ul id="messages"></ul>
+        This is chat application
+        <form id="chatbox">
+            <textarea></textarea>
+            <input type="submit" value="send" />
+        </form>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+        </script>
+        <script>
+            $(function() {
+                var socket = null;
+                var msgBox = $("#chatbox textarea");
+                var messages = $("#message");
+                $("#chatbox").submit(function(){
+                    if (!msgBox.val()) return false;
+                    if (!socket) {
+                        alert("error websocket dosnt work");
+                        return false;
+                    }
+                    socket.send(msgBox.val());
+                    msgBox.val("");
+                    return false;
+                });
+                if (!window["WebSocket"]) {
+                    alert("brawser is not work")
+                } else {
+                    socket = new WebSocket("ws://localhost:8080/room");
+                    socket.onclose = function() {
+                        alert("Connection is stop");
+                    }
+                    socket.onmessage = function(e) {
+                        messages.append($("<li>").text(e.data));
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
